@@ -1,4 +1,4 @@
-# Game of Life Java
+# Game of Life Java [![Build Status](https://travis-ci.org/jkratz55/game-of-life-java.svg?branch=master)](https://travis-ci.org/jkratz55/game-of-life-java)
 Conway’s Game Of Life implementation in Java
 
 ## Summary
