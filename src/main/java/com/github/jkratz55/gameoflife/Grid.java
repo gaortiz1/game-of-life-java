@@ -6,6 +6,8 @@ public class Grid {
     private static int DEFAULT_HEIGHT = 7;
 
     private int[][] grid;
+    private int rows;
+    private int columns;
 
     /**
      * Constructor that creates a random state
@@ -17,6 +19,9 @@ public class Grid {
                 grid[i][j] = (int) Math.round(Math.random());
             }
         }
+
+        this.rows = this.grid.length;
+        this.columns = this.grid[0].length;
     }
 
     /**
@@ -30,6 +35,8 @@ public class Grid {
             throw new IllegalArgumentException("Arrays passed in cannot be jagged");
         }
         this.grid = grid;
+        this.rows = this.grid.length;
+        this.columns = this.grid[0].length;
     }
 
     /**
@@ -40,6 +47,24 @@ public class Grid {
     public int[][] currentGeneration() {
 
         return this.grid;
+    }
+
+    /**
+     * Returns the number of rows in the grid
+     *
+     * @return Number of rows
+     */
+    public int rows() {
+        return this.rows;
+    }
+
+    /**
+     * Returns the number of columns in the grid
+     *
+     * @return Number of columns
+     */
+    public int columns() {
+        return this.columns;
     }
 
     /**
@@ -56,55 +81,76 @@ public class Grid {
         // iterate through two dimensional array
         for (int i=0; i<rows; i++) {
             for(int j=0; j<columns; j++) {
+                futureGeneration[i][j] = this.getNextStateForCell(i,j);
+            }
+        }
+        return futureGeneration;
+    }
 
-                // count of living neighbors
-                int liveCount = 0;
+    /**
+     * Gets next state for a particular cell
+     *
+     * @param i Row index of the grid
+     * @param j Column index of the grid
+     * @return 1 is cell alive, 0 if cell is dead
+     */
+    private int getNextStateForCell(int i, int j) {
 
-                // calculate how many living
-                for (int x=-1; x<=1; x++) {
-                    for (int y = -1; y <= 1; y++) {
-                        // check for boundary conditions
-                        if (i + x < 0 || i + x > (rows - 1) || y + j < 0 || y + j > (columns - 1)) {
-                            continue;
-                        }
-                        liveCount += grid[i + x][y + j];
-                    }
+        // get living neighbors
+        int aliveNeighbors = this.calculateLivingNeighbors(i,j);
+
+        /**
+         * Cell is lonely with less than two live neighbors and dies
+         */
+        if ((grid[i][j] == 1) && (aliveNeighbors < 2)) {
+            return  0;
+        }
+
+        /**
+         * Cell is overcrowded and dies
+         */
+        else if ((grid[i][j] == 1) && aliveNeighbors > 3) {
+            return  0;
+        }
+
+        /**
+         * Cell is dead but 3 lives neighbors causes it to be born
+         */
+        else if (grid[i][j] == 0 && aliveNeighbors == 3) {
+            return  1;
+        }
+
+        /**
+         * Nothing changes so copy that state
+         */
+        else {
+            return grid[i][j];
+        }
+    }
+
+    /**
+     * Returns the count of living neighbors for a particular cell in the grid
+     *
+     * @param i Row index of the grid
+     * @param j Column index of the grid
+     * @return Count of living neighbors for particular cell
+     */
+    private int calculateLivingNeighbors(int i, int j) {
+        int liveCount = 0;
+        for (int x=-1; x<=1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                // check for boundary conditions
+                if (i + x < 0 || i + x > (this.rows - 1) || y + j < 0 || y + j > (this.columns - 1)) {
+                    continue;
                 }
-
-                // remove since we may have counted ourselves
-                liveCount -= grid[i][j];
-
-                /**
-                 * Cell is lonely with less than two live neighbors and dies
-                 */
-                if ((grid[i][j] == 1) && (liveCount < 2)) {
-                    futureGeneration[i][j] = 0;
-                }
-
-                /**
-                 * Cell is overcrowded and dies
-                 */
-                else if ((grid[i][j] == 1) && liveCount > 3) {
-                    futureGeneration[i][j] = 0;
-                }
-
-                /**
-                 * Cell is dead but 3 lives neighbors causes it to be born
-                 */
-                else if (grid[i][j] == 0 && liveCount == 3) {
-                    futureGeneration[i][j] = 1;
-                }
-
-                /**
-                 * Nothing changes so copy that state
-                 */
-                else {
-                    futureGeneration[i][j] = grid[i][j];
-                }
+                liveCount += grid[i + x][y + j];
             }
         }
 
-        return futureGeneration;
+        // remove since we may have counted ourselves
+        liveCount -= grid[i][j];
+
+        return liveCount;
     }
 
     /**

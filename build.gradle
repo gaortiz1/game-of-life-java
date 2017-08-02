@@ -13,4 +13,6 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.0'
+
 }

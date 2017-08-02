@@ -1,6 +1,7 @@
 import com.github.jkratz55.gameoflife.Grid;
 import org.junit.Assert;
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 
 public class GridTest {
 
@@ -185,5 +186,57 @@ public class GridTest {
         Assert.assertEquals(results[9][0], 1);
         Assert.assertEquals(results[9][9], 1);
         Assert.assertEquals(results[0][9], 0);
+    }
+
+    @Test
+    public void testNeighborCount() {
+
+        int[][] initData = {
+            { 1, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 1, 0, 0, 0, 0, 0, 0, 1, 1 },
+            { 1, 1, 0, 0, 0, 0, 0, 0, 1, 1 }
+        };
+
+        Grid grid = new Grid(initData);
+
+        try {
+            int result = Whitebox.invokeMethod(grid, "calculateLivingNeighbors", 0,5);
+            Assert.assertEquals(result, 3);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Test
+    public void testNextStateForCell() {
+
+        int[][] initData = {
+            { 1, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 1, 0, 0, 0, 0, 0, 0, 1, 1 },
+            { 1, 1, 0, 0, 0, 0, 0, 0, 1, 1 }
+        };
+
+        Grid grid = new Grid(initData);
+
+        try {
+            int result = Whitebox.invokeMethod(grid, "getNextStateForCell", 0, 5);
+            Assert.assertEquals(result, 1);
+        } catch (Exception e) {
+           throw new RuntimeException();
+        }
     }
 }
